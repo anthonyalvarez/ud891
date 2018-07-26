@@ -1,108 +1,117 @@
 (function() {
-  'use strict';
+    'use strict';
 
-  // Define values for keycodes
-  var VK_ENTER      = 13;
-  var VK_SPACE      = 32;
-  var VK_LEFT       = 37;
-  var VK_UP         = 38;
-  var VK_RIGHT      = 39;
-  var VK_DOWN       = 40;
+    // Define values for keycodes
+    var VK_ENTER = 13;
+    var VK_SPACE = 32;
+    var VK_LEFT = 37;
+    var VK_UP = 38;
+    var VK_RIGHT = 39;
+    var VK_DOWN = 40;
 
-  // Helper function to convert NodeLists to Arrays
-  function slice(nodes) {
-    return Array.prototype.slice.call(nodes);
-  }
-
-  function RadioGroup(id) {
-    this.el = document.querySelector(id);
-    this.buttons = slice(this.el.querySelectorAll('.radio'));
-    this.focusedIdx = 0;
-    this.focusedButton = this.buttons[this.focusedIdx];
-
-    this.el.addEventListener('keydown', this.handleKeyDown.bind(this));
-    this.el.addEventListener('click', this.handleClick.bind(this));
-
-    // Any more initialization to do here?
-
-    var firstButton = true;
-    for (var button of this.buttons) {
-      if (firstButton) {
-        button.tabIndex = "0";
-        firstButton = false;
-      } else {
-        button.tabIndex = "-1";
-      }
-
-      // What about here?
+    // Helper function to convert NodeLists to Arrays
+    function slice(nodes) {
+        return Array.prototype.slice.call(nodes);
     }
 
-  }
+    function RadioGroup(id) {
+        this.el = document.querySelector(id);
+        this.buttons = slice(this.el.querySelectorAll('.radio'));
+        this.focusedIdx = 0;
+        this.focusedButton = this.buttons[this.focusedIdx];
 
-  RadioGroup.prototype.handleKeyDown = function(e) {
-    switch(e.keyCode) {
+        this.el.addEventListener('keydown', this.handleKeyDown.bind(this));
+        this.el.addEventListener('click', this.handleClick.bind(this));
 
-      case VK_UP:
-      case VK_LEFT: {
+        // Any more initialization to do here?
+        // this.el.setAttribute('role', 'radiogroup');
+        // Put permanently within HTML code already
 
-        e.preventDefault();
 
-        this.focusedIdx--;
-        if (this.focusedIdx < 0)
-          this.focusedIdx = this.focusedIdx + this.buttons.length;
+        var firstButton = true;
+        for (var button of this.buttons) {
+            if (firstButton) {
+                button.tabIndex = "0";
+                firstButton = false;
+            } else {
+                button.tabIndex = "-1";
+            }
 
-        break;
-      }
+            // What about here?
+            // button.setAttribute('role', 'radio');
+            // Put permanently within HTML code already
+        }
 
-      case VK_DOWN:
-      case VK_RIGHT: {
+    }
 
-        e.preventDefault();
+    RadioGroup.prototype.handleKeyDown = function(e) {
+        switch (e.keyCode) {
 
-        this.focusedIdx = (this.focusedIdx + 1) % this.buttons.length;
+            case VK_UP:
+            case VK_LEFT:
+                {
 
-        break;
-      }
+                    e.preventDefault();
 
-    case VK_SPACE:
-        var focusedButton = e.target;
-        var idx = this.buttons.indexOf(focusedButton);
+                    this.focusedIdx--;
+                    if (this.focusedIdx < 0)
+                        this.focusedIdx = this.focusedIdx + this.buttons.length;
+
+                    break;
+                }
+
+            case VK_DOWN:
+            case VK_RIGHT:
+                {
+
+                    e.preventDefault();
+
+                    this.focusedIdx = (this.focusedIdx + 1) % this.buttons.length;
+
+                    break;
+                }
+
+            case VK_SPACE:
+                var focusedButton = e.target;
+                var idx = this.buttons.indexOf(focusedButton);
+                if (idx < 0)
+                    return;
+                this.focusedIdx = idx;
+                break;
+
+            default:
+                return;
+        }
+
+        this.changeFocus();
+    };
+
+    RadioGroup.prototype.handleClick = function(e) {
+        var button = e.target;
+        var idx = this.buttons.indexOf(button);
         if (idx < 0)
-          return;
+            return;
         this.focusedIdx = idx;
-        break;
+        this.changeFocus();
+    };
 
-      default:
-        return;
-    }
+    RadioGroup.prototype.changeFocus = function() {
+        // Set the old button to tabindex -1
+        this.focusedButton.tabIndex = -1;
+        this.focusedButton.removeAttribute('checked');
+        this.focusedButton.setAttribute('aria-checked', 'false');
 
-    this.changeFocus();
-  };
+        // Set the new button to tabindex 0 and focus it
+        this.focusedButton = this.buttons[this.focusedIdx];
+        this.focusedButton.tabIndex = 0;
+        this.focusedButton.focus();
+        this.focusedButton.setAttribute('checked', '');
+        this.focusedButton.setAttribute('aria-checked', 'true');
 
-  RadioGroup.prototype.handleClick = function(e) {
-    var button = e.target;
-    var idx = this.buttons.indexOf(button);
-    if (idx < 0)
-      return;
-    this.focusedIdx = idx;
-    this.changeFocus();
-  };
+        // ... we probably want to do some stuff here, too ...
 
-  RadioGroup.prototype.changeFocus = function() {
-    // Set the old button to tabindex -1
-    this.focusedButton.tabIndex = -1;
-    this.focusedButton.removeAttribute('checked');
+    };
 
-    // Set the new button to tabindex 0 and focus it
-    this.focusedButton = this.buttons[this.focusedIdx];
-    this.focusedButton.tabIndex = 0;
-    this.focusedButton.focus();
-    this.focusedButton.setAttribute('checked', '');
-
-    // ... we probably want to do some stuff here, too ...
-
-  };
-
-  var group1 = new RadioGroup('#group1');
+    var group1 = new RadioGroup('#group1');
 
 }());
