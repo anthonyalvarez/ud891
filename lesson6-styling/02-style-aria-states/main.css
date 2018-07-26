@@ -18,7 +18,7 @@ main {
   margin: 0 180px;
 }
 
-.disclosure-button:hover, .disclosure-button:focus {
+.disclosure-button:hover,.disclosure-button:focus {
   background-color: #D81B60;
   color: #FFF;
 }
@@ -31,20 +31,41 @@ main {
   height: 36px;
 }
 
-.disclosure-button .icon::after {
+/* .disclosure-button .icon::after {
+  content: '▶';
+} */
+
+/* .disclosure-button.expanded .icon::after {
+  content: '▼';
+}
+ */
+/* .disclosure-content.hidden {
+  visibility: hidden;
+  opacity: 0;
+} */
+
+/* .disclosure-content {
+  visibility: visible;
+  opacity: 1;
+}
+ */
+/* New code */
+
+.disclosure-button[aria-pressed="false"] .icon::after {
   content: '▶';
 }
 
-.disclosure-button.expanded .icon::after {
+.disclosure-button[aria-pressed="true"] .icon::after {
   content: '▼';
 }
 
-.disclosure-content.hidden {
+
+.disclosure-content[aria-hidden="true"] {
   visibility: hidden;
   opacity: 0;
 }
 
-.disclosure-content {
+.disclosure-content[aria-hidden="false"] {
   visibility: visible;
   opacity: 1;
 }
